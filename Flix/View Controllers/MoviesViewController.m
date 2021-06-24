@@ -15,6 +15,7 @@
 @property (nonatomic, strong) NSArray *movies;
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end
 
@@ -25,6 +26,7 @@
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
+    [self.activityIndicator startAnimating];
     [self fetchMovies];
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(fetchMovies) forControlEvents:UIControlEventValueChanged];
@@ -37,16 +39,32 @@
     NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:nil delegateQueue:[NSOperationQueue mainQueue]];
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
            if (error != nil) {
-               NSLog(@"%@", [error localizedDescription]);
+               UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Error" message:@"Make sure you have internet connection!" preferredStyle:(UIAlertControllerStyleAlert)];
+
+               // create a cancel action
+//               UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {}];
+//               // add the cancel action to the alertController
+//               [alert addAction:cancelAction];
+
+               // create an OK action
+               UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Retry" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                   [self fetchMovies];
+                }];
+               // add the OK action to the alert controller
+               [alert addAction:okAction];
+               [self presentViewController:alert animated:YES completion:^{
+                   // optional code for what happens after the alert controller has finished presenting
+               }];
            }
            else {
                NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
-               NSLog(@"%@", dataDictionary);
+//               NSLog(@"%@", dataDictionary);
                self.movies = dataDictionary[@"results"];
-               for (NSDictionary *movie in self.movies){
-                   NSLog(@"%@", movie[@"title"]);
-               }
+//               for (NSDictionary *movie in self.movies){
+//                   NSLog(@"%@", movie[@"title"]);
+//               }
                [self.tableView reloadData];
+               [self.activityIndicator stopAnimating];
            }
         [self.refreshControl endRefreshing];
        }];
