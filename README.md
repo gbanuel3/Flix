@@ -50,6 +50,8 @@ GIF created with [Kap](https://getkap.co/).
 
 Describe any challenges encountered while building the app.
 
+I tried implementing a searchBar but I couldn't find a way to connect it to a connectionView. I kept getting an exception error and it seemed that data was not being passed into the searchBar data structures correctly (or maybe one of my outlet connections was incorrect). I will continue to work on this before the deadline.
+
 ## Credits
 
 List an 3rd party libraries, icons, graphics, or other assets you used in your app.
