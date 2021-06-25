@@ -26,6 +26,7 @@
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
+    
     [self.activityIndicator startAnimating];
     [self fetchMovies];
     self.refreshControl = [[UIRefreshControl alloc] init];
